@@ -2,24 +2,25 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { MdAddCircleOutline, MdOutlineLogout } from "react-icons/md";
 import ReactPaginate from "react-paginate";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
-const Movie = (props) => {
-  const { data } = props;
+const Movie = () => {
   const [currentItems, setCurrentItems] = useState([]);
   const [pageCount, setPageCount] = useState(0);
   const [itemOffset, setItemOffset] = useState(0);
+  let [movies, setMovies] = useState([]);
   const itemsPerPage = 8;
 
-  const [movies, setMovies] = useState([]);
+  movies = useSelector((state) => state.movies.movies);
 
-  useEffect(() => {
-    return () => {
-      axios
-        .get("https://jsonplaceholder.typicode.com/photos")
-        .then((res) => setMovies(res.data));
-    };
-  }, []);
+  // useEffect(() => {
+  //   return () => {
+  //     axios
+  //       .get("https://jsonplaceholder.typicode.com/photos")
+  //       .then((res) => setMovies(res.data));
+  //   };
+  // }, []);
 
   useEffect(() => {
     const endOffset = itemOffset + itemsPerPage;
@@ -51,19 +52,19 @@ const Movie = (props) => {
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-16 justify-items-center items-center px-20 w-full">
         {currentItems.map((movie) => (
-          <div
+          <Link
+            to={`/create/${movie.id}`}
             className=" h-[500px] bg-card-color rounded-xl flex flex-col justify-around"
             key={movie.id}
           >
             <img
-              src={movie.url}
+              src={movie.image}
               alt="Movie"
-              className="w-full md:px-2 h-[400px] rounded-xl flex justify-center items-center"
+              className="w-96 md:px-2 h-[400px] rounded-xl flex justify-center items-center"
             />
-            {/* <h1>{movie.title}</h1> */}
-            <h1 className="font-medium text-xl pl-2">Movie 1</h1>
-            <p className="font-light text-sm pl-2">{movie.id}</p>
-          </div>
+            <h1 className="font-medium text-xl pl-2">{movie.title}</h1>
+            <p className="font-light text-sm pl-2">{movie.publishYear}</p>
+          </Link>
         ))}
       </div>
       <></>

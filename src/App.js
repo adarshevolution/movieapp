@@ -3,6 +3,7 @@ import "./App.css";
 import SignIn from "./components/SignIn";
 import Movies from "./components/Movies";
 import Layout from "./components/layout/Layout";
+import CreateMovie from "./components/CreateMovie";
 
 function App() {
   return (
@@ -12,6 +13,8 @@ function App() {
           <Routes>
             <Route path="/" element={<SignIn />} />
             <Route path="/movies" element={<Movies />} />
+            <Route path="/create" element={<CreateMovie />} />
+            <Route path="/create/:eid" element={<CreateMovie />} />
           </Routes>
         </BrowserRouter>
       </Layout>
