@@ -23,7 +23,7 @@ const MovieSlice = createSlice({
       if (editedMovie) {
         editedMovie.title = title;
         editedMovie.publishYear = publishYear;
-        editedMovie.image = URL.createObjectURL(image);
+        editedMovie.image = image;
       }
     },
   },

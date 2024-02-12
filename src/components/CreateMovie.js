@@ -3,8 +3,6 @@ import { FiDownload } from "react-icons/fi";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { addMovie, editMovie } from "./slice/MovieSlice";
-import * as Yup from "yup";
-import { ErrorMessage, Formik } from "formik";
 
 const CreateMovie = () => {
   const { eid } = useParams();
@@ -17,20 +15,13 @@ const CreateMovie = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [error, setError] = useState({});
+  const newError = {};
 
   const [editTitle, setEditTitle] = useState(existingMovie[0]?.title);
   const [editPublishYear, setEdiPublishYear] = useState(
     existingMovie[0]?.publishYear
   );
   const [editImage, setEditImage] = useState(existingMovie[0]?.image);
-
-  const validationSchema = Yup.object({
-    title: Yup.string().required("Title is required"),
-    publishYear: Yup.number()
-      .min(4, "Publishing year must be at least 4 digits")
-      .required("Publishing year is required"),
-    image: Yup.mixed().required("Image is required"),
-  });
 
   const handleClick = (event) => {
     inputRef.current.click();
@@ -42,15 +33,15 @@ const CreateMovie = () => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const newError = {};
     if (!title) {
       newError.title = "Title is Required";
     }
     if (!publishYear) {
       newError.publishYear = "Publication Year is Required";
-    } else if (isNaN(publishYear) || publishYear.length < 4) {
-      newError.publishYear =
-        "Publish year must be a number and have a length of at least 4";
+    } else if (isNaN(publishYear)) {
+      newError.publishYear = "Publish year must be a number ";
+    } else if (publishYear.length < 4) {
+      newError.publishYear = "Publish Year must have a length of at least 4 ";
     }
     if (!image) {
       newError.image = "Image is Required";
@@ -62,31 +53,47 @@ const CreateMovie = () => {
       dispatch(addMovie({ title, publishYear, image }));
       navigate("/movies");
     }
-    // validationSchema
-    //   .validate({ title, publishYear, image }, { abortEarly: false })
-    //   .then((values) => {
-    //     dispatch(addMovie({ title, publishYear, image }));
-    //     navigate("/movies");
-    //   })
-    //   .catch((err) => {
-    //     console.log(err);
-    //   });
-
-    // dispatch(addMovie({ title, publishYear, image }));
-    // navigate("/movies");
   };
 
   const handleUpdate = (event) => {
     event.preventDefault();
-    dispatch(
-      editMovie({
-        id: eid,
-        title: editTitle,
-        publishYear: editPublishYear,
-        image: image,
-      })
-    );
-    navigate("/movies");
+    if (!editTitle) {
+      newError.title = "Title is Required for Update.";
+    }
+    if (!editPublishYear) {
+      newError.publishYear = "Publication Year is Required";
+    } else if (isNaN(editPublishYear)) {
+      newError.publishYear = "Publish year must be a number ";
+    } else if (editPublishYear.length < 4) {
+      newError.publishYear = "Publish Year must have a length of at least 4 ";
+    }
+    if (Object.keys(newError).length > 0) {
+      setError(newError);
+    } else {
+      const oldImage = image || editImage;
+      if (typeof oldImage === "object") {
+        dispatch(
+          editMovie({
+            id: eid,
+            title: editTitle,
+            publishYear: editPublishYear,
+            image: URL.createObjectURL(oldImage),
+          })
+        );
+        navigate("/movies");
+      }
+      if (typeof oldImage === "string") {
+        dispatch(
+          editMovie({
+            id: eid,
+            title: editTitle,
+            publishYear: editPublishYear,
+            image: oldImage,
+          })
+        );
+        navigate("/movies");
+      }
+    }
   };
 
   const handleButtonClick = (event) => {
@@ -96,23 +103,22 @@ const CreateMovie = () => {
 
   return (
     <>
-      <div className="p-10">
+      <div className="p-10 ">
         <h1 className="font-semibold text-5xl">
           {eid ? "Edit" : "Create a new movie"}
         </h1>
         <div className="flex justify-center pt-10  ">
           <form onSubmit={eid ? handleUpdate : handleSubmit}>
-            <div className="flex flex-col gap-10">
-              <div className=" h-[400px] min-w-96 md:w-[400px] border-2 rounded-xl border-dashed  flex flex-col justify-center items-center bg-input-color md:order-1 order-2">
-                <div onClick={handleClick}>
+            <div className="flex flex-col gap-5">
+              <div
+                onClick={handleClick}
+                className=" h-[400px] min-w-96 md:w-[400px] border-2 rounded-xl border-dashed  flex flex-col justify-center items-center bg-input-color md:order-1 order-2"
+              >
+                <div>
                   {image || editImage ? (
                     <img
-                      //   src={
-                      //     eid
-                      //       ? editImage || URL.createObjectURL(editImage)
-                      //       : URL.createObjectURL(image)
-                      //   }
-                      src={editImage || (image && URL.createObjectURL(image))}
+                      src={eid ? editImage : URL.createObjectURL(image)}
+                      // src={editImage || URL.createObjectURL(image)}
                       //   src={URL.createObjectURL(image)}
                       alt="Uploaded Pic"
                       className="h-60 w-72 object-cover"
