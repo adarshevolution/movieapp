@@ -1,14 +1,19 @@
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
 
 const SignIn = () => {
+  const navigate = useNavigate();
   const initialValues = {
     email: "",
     password: "",
     rememberme: false,
   };
-
+  const dummyCredentials = {
+    email: "a@b.com",
+    password: "Evolution@123",
+  };
   return (
     <>
       <div className="  min-h-screen flex flex-col items-center justify-center  mx-8">
@@ -24,6 +29,14 @@ const SignIn = () => {
               .required("Password is required"),
           })}
           onSubmit={(values, { setSubmitting }) => {
+            if (
+              values.email === dummyCredentials.email &&
+              values.password === dummyCredentials.password
+            ) {
+              navigate("/movies");
+            } else {
+              alert("Invalid Email or Password");
+            }
             console.log(values);
             setSubmitting(false);
           }}
@@ -49,7 +62,7 @@ const SignIn = () => {
                   onBlur={handleBlur}
                   value={values.email}
                   placeholder="Email"
-                  className={` rounded-[10px]  w-full md:w-72 h-11 bg-input-color focus:bg-white focus:text-black placeholder-white placeholder:pl-4 ${
+                  className={` rounded-[10px]  w-full md:w-72 h-11 bg-input-color focus:bg-white focus:text-black placeholder-white pl-4 ${
                     errors.email && touched.email && "outline-red-500"
                   }`}
                 />
@@ -65,7 +78,7 @@ const SignIn = () => {
                   onBlur={handleBlur}
                   value={values.password}
                   placeholder="Password"
-                  className={` rounded-[10px] w-full md:w-72 h-11 bg-input-color focus:bg-white focus:text-black placeholder-white placeholder:pl-4 
+                  className={` rounded-[10px] w-full md:w-72 h-11 bg-input-color focus:bg-white focus:text-black placeholder-white pl-4 
                   ${
                     errors.password && touched.password ? "outline-red-500" : ""
                   }`}

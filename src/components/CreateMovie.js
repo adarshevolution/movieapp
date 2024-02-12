@@ -110,16 +110,11 @@ const CreateMovie = () => {
         <div className="flex justify-center pt-10  ">
           <form onSubmit={eid ? handleUpdate : handleSubmit}>
             <div className="flex flex-col gap-5">
-              <div
-                onClick={handleClick}
-                className=" h-[400px] min-w-96 md:w-[400px] border-2 rounded-xl border-dashed  flex flex-col justify-center items-center bg-input-color md:order-1 order-2"
-              >
-                <div>
+              <div className=" h-[400px] min-w-96 md:w-[400px] border-2 rounded-xl border-dashed  flex flex-col justify-center items-center bg-input-color md:order-1 order-2">
+                <div onClick={handleClick}>
                   {image || editImage ? (
                     <img
                       src={eid ? editImage : URL.createObjectURL(image)}
-                      // src={editImage || URL.createObjectURL(image)}
-                      //   src={URL.createObjectURL(image)}
                       alt="Uploaded Pic"
                       className="h-60 w-72 object-cover"
                     />
@@ -144,6 +139,7 @@ const CreateMovie = () => {
                   ref={inputRef}
                   onChange={handelImageChange}
                   className="text-black hidden "
+                  accept=".jpg, .jpeg, .png "
                 />
                 {error.image && (
                   <span className="text-red-500 italic ">{error.image}</span>
