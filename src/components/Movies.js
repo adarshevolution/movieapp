@@ -1,16 +1,33 @@
 import React, { useEffect, useState } from "react";
 import Movie from "./Moive";
 import { Link, Outlet } from "react-router-dom";
-import { useSelector } from "react-redux";
+import axios from "axios";
 
 const Movies = () => {
   const [showMovie, setShowMovie] = useState(true);
-  const movieData = useSelector((state) => state.movies.movies);
+  let [movies, setMovies] = useState([]);
+  const token = localStorage.getItem("token");
   useEffect(() => {
-    if (movieData.length > 0) {
+    return () => {
+      axios
+        .get("/movies", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        })
+        // .then((res) => setMovies(res.data));
+        .then((res) => {
+          return setMovies(res.data);
+        })
+        .catch((err) => console.log(err));
+    };
+  }, [token]);
+
+  useEffect(() => {
+    if (movies.length > 0) {
       setShowMovie(false);
     }
-  }, [movieData]);
+  }, [movies]);
 
   return (
     <>
@@ -27,7 +44,7 @@ const Movies = () => {
         </div>
       ) : (
         <div>
-          <Movie />
+          <Movie movies={movies} />
         </div>
       )}
       <Outlet />

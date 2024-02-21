@@ -1,26 +1,13 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { MdAddCircleOutline, MdOutlineLogout } from "react-icons/md";
 import ReactPaginate from "react-paginate";
-import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
-const Movie = () => {
+const Movie = ({ movies }) => {
   const [currentItems, setCurrentItems] = useState([]);
   const [pageCount, setPageCount] = useState(0);
   const [itemOffset, setItemOffset] = useState(0);
-  let [movies, setMovies] = useState([]);
   const itemsPerPage = 8;
-
-  movies = useSelector((state) => state.movies.movies);
-
-  // useEffect(() => {
-  //   return () => {
-  //     axios
-  //       .get("https://jsonplaceholder.typicode.com/photos")
-  //       .then((res) => setMovies(res.data));
-  //   };
-  // }, []);
 
   useEffect(() => {
     const endOffset = itemOffset + itemsPerPage;
@@ -31,6 +18,10 @@ const Movie = () => {
   const handlePageClick = (event) => {
     const newOffSet = (event.selected * itemsPerPage) % movies.length;
     setItemOffset(newOffSet);
+  };
+
+  const handleLogout = (event) => {
+    localStorage.clear();
   };
   return (
     <>
@@ -46,21 +37,25 @@ const Movie = () => {
             Logout
           </h3>
           <Link to={"/"}>
-            <MdOutlineLogout size={22} className="ml-2" />
+            <MdOutlineLogout
+              size={22}
+              className="ml-2"
+              onClick={handleLogout}
+            />
           </Link>
         </div>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-16 justify-items-center items-center px-20 w-full">
-        {currentItems.map((movie) => (
+        {currentItems.map((movie, _id) => (
           <Link
-            to={`/create/${movie.id}`}
+            to={`/movies/${movie._id}`}
+            key={_id}
             className=" h-[500px] bg-card-color rounded-xl flex flex-col justify-around"
-            key={movie.id}
           >
             <img
               src={movie.image}
-              alt="Movie"
-              className="w-96 md:px-2 h-[400px] rounded-xl flex justify-center items-center"
+              alt={movie.image}
+              className="w-96 md:px-2 h-[400px] rounded-xl flex justify-center items-center object-cover"
             />
             <h1 className="font-medium text-xl pl-2">{movie.title}</h1>
             <p className="font-light text-sm pl-2">{movie.publishYear}</p>
@@ -71,7 +66,7 @@ const Movie = () => {
       <ReactPaginate
         breakLabel="..."
         nextLabel={
-          <span className="bg-card-color  flex item-center justify-cente rounded-md p-1">
+          <span className="bg-card-color flex item-center justify-cente rounded-md p-1">
             Next
           </span>
         }
@@ -85,7 +80,7 @@ const Movie = () => {
         }
         renderOnZeroPageCount={null}
         containerClassName="flex item-center justify-center py-40 gap-4 "
-        pageClassName="block w-8 h-8 flex item-center justify-center bg-card-color rounded-md"
+        pageClassName=" w-8 flex item-center justify-center bg-card-color rounded-md"
         activeClassName="bg-primary rounded index-5"
       />
     </>

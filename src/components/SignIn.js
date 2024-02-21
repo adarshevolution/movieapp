@@ -1,7 +1,10 @@
+import axios from "axios";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import React from "react";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import * as Yup from "yup";
+import { addUser } from "./slice/UserSlice";
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -10,10 +13,7 @@ const SignIn = () => {
     password: "",
     rememberme: false,
   };
-  const dummyCredentials = {
-    email: "a@b.com",
-    password: "Evolution@123",
-  };
+  const dispatch = useDispatch();
   return (
     <>
       <div className="  min-h-screen flex flex-col items-center justify-center  mx-8">
@@ -29,15 +29,19 @@ const SignIn = () => {
               .required("Password is required"),
           })}
           onSubmit={(values, { setSubmitting }) => {
-            if (
-              values.email === dummyCredentials.email &&
-              values.password === dummyCredentials.password
-            ) {
-              navigate("/movies");
-            } else {
-              alert("Invalid Email or Password");
-            }
-            console.log(values);
+            axios
+              .post("/signin", values)
+              .then((res) => {
+                const { _id, email } = res?.data?.user;
+                const { token } = res?.data;
+                localStorage.setItem("token", token);
+                dispatch(addUser({ _id, email, token }));
+                navigate("/movies");
+              })
+              .catch((error) => console.log(error.response.data.message))
+              .finally(() => {
+                setSubmitting(false);
+              });
             setSubmitting(false);
           }}
         >
